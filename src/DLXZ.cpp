@@ -18,9 +18,9 @@ DancingLinks::DancingLinks(
     ) : ROWS(rows), COLS(cols), countNum(0), countSolution(0){
         
         // 初始化SDD管理器
-        vtree = sdd_vtree_new(cols, "balanced");
+        vtree = sdd_vtree_new(rows, "balanced");
         sdd_manager = sdd_manager_new(vtree);
-        sdd_manager_auto_gc_and_minimize_on(sdd_manager);
+        //sdd_manager_auto_gc_and_minimize_on(sdd_manager);
         
         // 初始化 True 和 False 节点
         sdd_true = sdd_manager_true(sdd_manager);
@@ -422,7 +422,8 @@ SddNode* DancingLinks::search()
     }
     //ZDDNode* x = F;
     // x修改为SddNode*类型
-    SddNode* x = sdd_true;
+    //SddNode* x = sdd_true;
+    SddNode* x = sdd_false;  // 初始化为false，表示空解集
 
     cover(choose->col);
     Node* curC = choose->up;
@@ -440,32 +441,41 @@ SddNode* DancingLinks::search()
         // if( y->label != -2 ){
         //     x = unique(curC->row, x, y);
         // }
+        
         // 尝试替换为SDD
+        // 递归搜索子问题
         SddNode* y = search();
+        
+        // 如果子问题有解
         if( y != sdd_false ){
             // 创建当前行的文字节点
             SddNode* literal = sdd_manager_literal(curC->row, sdd_manager);
-            if (literal == nullptr) {
-                // 处理错误情况
-                uncover(choose->col);
+            if (!literal) {
+                // 处理错误...
+                cout<<"空指针literal"<<endl;
                 return sdd_false;
             }
             
-            // 使用SDD的析取操作
+            // 使用SDD的合取操作，将当前行与子问题的解合取
             SddNode* conj = sdd_conjoin(literal, y, sdd_manager);
-            if (conj == nullptr) {
-                // 处理错误情况
-                uncover(choose->col);
+            if (!conj) {
+                // 处理错误...
+                cout<<"空指针conj"<<endl;
+                sdd_deref(literal, sdd_manager);
                 return sdd_false;
             }
             
+            // 使用SDD的析取操作，将当前解与新的解析取
             SddNode* new_x = sdd_disjoin(x, conj, sdd_manager);
-            if (new_x == nullptr) {
-                // 处理错误情况
-                uncover(choose->col);
+            if (!new_x) {
+                // 处理错误...
+                cout<<"空指针new_x"<<endl;
+                sdd_deref(literal, sdd_manager);
+                sdd_deref(conj, sdd_manager);
                 return sdd_false;
             }
             
+            // 更新x为新的解集
             x = new_x;
         }
 
