@@ -1,0 +1,3 @@
+/home/ljr/myrepo/dlxs/build/CMakeFiles/main.dir
+/home/ljr/myrepo/dlxs/build/CMakeFiles/edit_cache.dir
+/home/ljr/myrepo/dlxs/build/CMakeFiles/rebuild_cache.dir
