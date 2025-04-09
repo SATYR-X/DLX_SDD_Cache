@@ -117,6 +117,7 @@ int main() {
 
                 DancingLinks dlm(r, c, X);
                 //dlm.printColumnHeaders();
+                cout<<"测试文件："<<entry.path()<<endl;
                 
                 auto start = std::chrono::high_resolution_clock::now();
                 //ZDDNode* z = dlm.search();

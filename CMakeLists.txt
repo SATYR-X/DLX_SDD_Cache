@@ -16,12 +16,19 @@ set(MAIN_SOURCES
 
 # 添加可执行文件
 add_executable(main ${MAIN_SOURCES})
+# add_executable(test ${TEST_SOURCES})
 
-# 链接本地 libsdd.a 静态库和数学库 libm
+# 链接本地 libsdd.a 静态库
 target_link_libraries(main
     ${PROJECT_SOURCE_DIR}/libs/libsdd.a
     m
 )
+
+set(TEST_SOURCES
+    test/test.cpp
+    src/DLXZ.cpp
+)
+
 
 # 添加调试标志
 set(CMAKE_BUILD_TYPE Debug)
